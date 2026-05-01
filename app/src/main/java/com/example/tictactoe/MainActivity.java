@@ -22,12 +22,12 @@ public class MainActivity extends AppCompatActivity {
         String[] modes = {"PvP", "PvE"};
         String[] sizes = {"3x3", "4x4", "5x5"};
 
-        ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modes);
-        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, modes);
+        modeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         modeSpinner.setAdapter(modeAdapter);
 
-        ArrayAdapter<String> sizeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sizes);
-        sizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> sizeAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, sizes);
+        sizeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         sizeSpinner.setAdapter(sizeAdapter);
 
         startButton.setOnClickListener(v -> {
