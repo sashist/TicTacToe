@@ -23,6 +23,8 @@ public class GameActivity extends AppCompatActivity {
 
     private Button[][] buttons;
     private GameLogic game;
+    private StatsStorage statsStorage;
+    private boolean statsSavedForCurrentGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +41,15 @@ public class GameActivity extends AppCompatActivity {
         String mode = getIntent().getStringExtra("mode");
         int size = getIntent().getIntExtra("size", 3);
         game = new GameLogic(size, mode);
+        statsStorage = new StatsStorage(this);
+        statsSavedForCurrentGame = false;
 
         createBoardUI();
         updateUI();
 
         btnNewGame.setOnClickListener(v -> {
             game.reset();
+            statsSavedForCurrentGame = false;
             updateUI();
         });
         
@@ -94,6 +99,7 @@ public class GameActivity extends AppCompatActivity {
                     if (game.makeMove(r, c)) {
                         updateUI();
                         if (game.isGameOver()) {
+                            saveStatsIfNeeded();
                             Toast.makeText(this, game.getEndMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -141,5 +147,30 @@ public class GameActivity extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void saveStatsIfNeeded() {
+        if (statsSavedForCurrentGame) {
+            return;
+        }
+
+        GameLogic.GameResult result = game.getGameResult();
+        if (result == GameLogic.GameResult.DRAW) {
+            statsStorage.recordDraw();
+            statsSavedForCurrentGame = true;
+            return;
+        }
+
+        if (!"PvE".equals(game.getMode())) {
+            return;
+        }
+
+        if (result == GameLogic.GameResult.X_WIN) {
+            statsStorage.recordWin();
+            statsSavedForCurrentGame = true;
+        } else if (result == GameLogic.GameResult.O_WIN) {
+            statsStorage.recordLoss();
+            statsSavedForCurrentGame = true;
+        }
     }
 }

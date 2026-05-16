@@ -2,9 +2,15 @@ package com.example.tictactoe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class GameLogic {
+
+    public enum GameResult {
+        IN_PROGRESS,
+        X_WIN,
+        O_WIN,
+        DRAW
+    }
 
     private int size;
     private String mode;
@@ -13,6 +19,7 @@ public class GameLogic {
     private char[][] board;
     private char currentPlayer;
     private boolean gameOver;
+    private GameResult gameResult;
 
     private List<int[]> winningCells;
     private String endMessage;
@@ -28,6 +35,7 @@ public class GameLogic {
         board = new char[size][size];
         currentPlayer = 'X';
         gameOver = false;
+        gameResult = GameResult.IN_PROGRESS;
         winningCells = null;
         endMessage = null;
     }
@@ -40,12 +48,14 @@ public class GameLogic {
         winningCells = getWinningCells(currentPlayer);
         if (winningCells != null) {
             gameOver = true;
+            gameResult = (currentPlayer == 'X') ? GameResult.X_WIN : GameResult.O_WIN;
             endMessage = (currentPlayer == 'X') ? "Победили крестики" : "Победили нолики";
             return true;
         }
 
         if (isBoardFull()) {
             gameOver = true;
+            gameResult = GameResult.DRAW;
             endMessage = "Ничья";
             return true;
         }
@@ -60,32 +70,22 @@ public class GameLogic {
     }
 
     private void makeComputerMove() {
-        List<int[]> freeCells = new ArrayList<>();
-
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                if (board[row][col] == '\0') {
-                    freeCells.add(new int[]{row, col});
-                }
-            }
-        }
-
-        if (freeCells.isEmpty()) return;
-
-        Random random = new Random();
-        int[] move = freeCells.get(random.nextInt(freeCells.size()));
+        int[] move = BotEngine.chooseMove(board, winLength);
+        if (move == null) return;
 
         board[move[0]][move[1]] = currentPlayer;
 
         winningCells = getWinningCells(currentPlayer);
         if (winningCells != null) {
             gameOver = true;
+            gameResult = GameResult.O_WIN;
             endMessage = "Победили нолики";
             return;
         }
 
         if (isBoardFull()) {
             gameOver = true;
+            gameResult = GameResult.DRAW;
             endMessage = "Ничья";
             return;
         }
@@ -138,4 +138,5 @@ public class GameLogic {
     public boolean isGameOver() { return gameOver; }
     public List<int[]> getWinningCells() { return winningCells; }
     public String getEndMessage() { return endMessage; }
+    public GameResult getGameResult() { return gameResult; }
 }

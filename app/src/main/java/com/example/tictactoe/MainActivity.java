@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner modeSpinner = findViewById(R.id.spinnerMode);
         Spinner sizeSpinner = findViewById(R.id.spinnerSize);
         Button startButton = findViewById(R.id.btnStartGame);
+        Button statsButton = findViewById(R.id.btnStats);
 
         String[] modes = {"PvP", "PvE"};
         String[] sizes = {"3x3", "4x4", "5x5"};
@@ -38,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, GameActivity.class);
             intent.putExtra("mode", mode);
             intent.putExtra("size", size);
+            startActivity(intent);
+        });
+
+        statsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, StatsActivity.class);
             startActivity(intent);
         });
     }
